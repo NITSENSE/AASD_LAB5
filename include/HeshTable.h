@@ -16,34 +16,30 @@ struct Pair {
 template<typename K, typename V>
 class HashTable {
 
-	std::vector<Pair<K, V>>* _data;
-	size_t _capacity;
-	static const size_t w = sizeof(K) * 8;
-
+	Pair<K, V>* _data;
+	static const size_t _default_size = 100;
 	size_t hash_function(const K& key) {
 		return key % _capacity;
 	}
 public:
 	HashTable() : _capacity(0) {}
-	HashTable(size_t degree_of_two) : _capacity(size_t(pow(2, degree_of_two))) {
-		_data = new std::vector<Pair<K, V>>[_capacity];
-		_data->reserve(_capacity);
+	HashTable(size_t size = _default_size) : _size(size), _data(new Pair<K, V>[size]) {};
+	HashTable(size_t size, size_t max_random_number) : _size(size), _data(new Pair<K, V>[size]) {
+		for (size_t i = 0; i < _size; i++) {
+			K key = static_cast<K>(i);
+			V value = static_cast<V>(rand() % max_random_number);
+			insert(key, value);
+		}
+			
 	}
-	HashTable(const HashTable& other) {
-		_data = other._data;
-		_capacity = other._capacity;
+	HashTable(const HashTable& other) : _size(size), _data(new Pair<K, V>[size]) {
+		for (int i = 0; i < _size; i++) 
+			_data[i] = other._data[i];
 	}
 	~HashTable() {
 		delete[] _data;
 	}
-
-	size_t get_capacity() const {
-		return _data->capacity();
-	}
-	size_t get_load() const {
-		return _data->size();
-	}
-
+	
 };
 
-#endif // !LAB_5_INCLUDE_HASHTABLE_H
+#endif 
