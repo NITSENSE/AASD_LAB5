@@ -28,21 +28,13 @@ class HashTable {
 		return (int)h;
 	}
 
-	size_t _pearson_hash(K key) const {
-		std::string value;
-		if constexpr (std::is_integral_v<K> || std::is_floating_point_v<K>) {
-			value = std::to_string(key);
-		}
-		else
-			value = key;
+	size_t _pearson_hash(std::string value) const {
 		size_t hash_value = 0;
 		for (char c : value) {
 			hash_value = c + (hash_value * 31);
 		}
-		return hash_value % _capacity;
+		return hash_value;
 	}
-
-	
 
 	float  _load_factor_calculate() const {
 		if (!_size)
@@ -64,7 +56,12 @@ class HashTable {
 	}
 
 public:
-	HashTable() : _capacity(0), _size(0) {}
+	HashTable() : _capacity(10), _size(0) {
+		_data.reserve(_capacity);
+		for (int i = 0; i < _capacity; ++i) {
+			_data.emplace_back();
+		}
+	}
 
 	HashTable(size_t capacity) : _capacity(capacity), _size(0) {
 		_data.reserve(capacity);
@@ -89,11 +86,13 @@ public:
 		}
 			
 	}
+
 	HashTable(const HashTable& other) {
 		_capacity = other._capacity;
 		_size = other._size;
 		_data = other._data;
 	}
+
 	~HashTable() {
 		_data.clear();
 		_size = 0;
@@ -203,7 +202,22 @@ public:
 		}
 		return count;
 	}
+
+	size_t hash_string_pearson(const std::string& text) const {
+		return _pearson_hash(text);
+	}
+
+	bool compare_hashes(size_t saved_hash, const std::string& new_text) const {
+		size_t new_hash = _pearson_hash(new_text);
+		return saved_hash == new_hash;
+	}
 };
+
+
+
+
+
+
 
 
 template<typename K, typename V>
